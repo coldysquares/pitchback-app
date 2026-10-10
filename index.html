@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#403742">
+  <meta name="description" content="Hear the pitch. Sing it back. Get clear, private feedback and build vocal pitch recall.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pitchback">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Pitchback · Sing it back.</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --shore: #403742; --blue: #89b5cc; --mist: #e2dce8; --depth: #56548c; --twilight: #6d6380;
+      --paper: #f8f6f8; --white: #fff; --ink: #403742; --muted: #716675;
+      --line: #d9d1df; --soft: #f0eaf1; --accent: #526f80; --success: #52746e;
+      --caution: #9b6749; --shadow: 0 12px 35px rgba(64, 55, 66, .06);
+    }
+    * { box-sizing:border-box }
+    html { background:var(--paper); -webkit-text-size-adjust:100%; }
+    body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font:16px/1.52 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+    button { font:inherit; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+    button:focus-visible { outline:3px solid var(--depth); outline-offset:3px; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    button, input { font-size:16px; }
+    .shell { max-width:600px; margin:0 auto; padding:calc(20px + env(safe-area-inset-top)) 21px calc(22px + env(safe-area-inset-bottom)); }
+    .site-header { display:flex; gap:13px; align-items:center; justify-content:space-between; margin-bottom:36px; }
+    .identity { display:flex; align-items:center; gap:11px; min-width:0; }
+    .identity img { display:block; width:39px; height:39px; background:var(--shore); border-radius:12px; padding:6px; object-fit:contain; }
+    .wordmark { font-size:21px; letter-spacing:-.055em; font-weight:760; line-height:1; }
+    .edition { color:var(--muted); font-size:10px; letter-spacing:.115em; font-weight:750; margin-top:6px; }
+    .top-tag { color:var(--muted); font-size:11px; letter-spacing:.07em; white-space:nowrap; }
+    .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:.16em; font-weight:750; color:var(--depth); }
+    h1 { font-size:clamp(43px,10vw,62px); line-height:1.06; letter-spacing:-.065em; font-weight:760; margin:11px 0 16px; }
+    h2 { margin:0; font-size:21px; letter-spacing:-.025em; line-height:1.2; font-weight:740; }
+    p { margin:0; }
+    .intro { max-width:480px; font-size:16px; color:var(--muted); margin:0 0 24px; }
+    .hero { display:grid; grid-template-columns:1fr 104px; align-items:center; gap:12px; padding-bottom:25px; }
+    .woven { width:100px; height:100px; border-radius:19px; transform:rotate(-8deg); border:1px solid #d9d0df; box-shadow: 0 6px 0 #ece5ef; background: repeating-linear-gradient(45deg, transparent 0 11px,rgba(86,84,140,.25) 12px 13.5px,transparent 14px 24px),repeating-linear-gradient(-45deg, transparent 0 11px,rgba(137,181,204,.55) 12px 13.5px,transparent 14px 24px),#f4f0f5; }
+    .card { background:rgba(255,255,255,.84); border:1px solid var(--line); border-radius:21px; box-shadow:var(--shadow); padding:22px; margin:0 0 18px; }
+    .help { font-size:13px; color:var(--muted); margin-top:6px; }
+    .choice-label { font-size:12px; font-weight:750; color:var(--ink); margin:19px 0 8px; display:flex; justify-content:space-between; gap:12px; }
+    .choice-label label { font:inherit; }
+    #tone-volume { display:block; width:100%; accent-color:var(--depth); height:31px; margin:5px 0 0; }
+    .segmented { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; padding:5px; background:var(--soft); border:1px solid #e4dce7; border-radius:15px; }
+    .choice { border:0; border-radius:11px; background:transparent; padding:11px 7px; font-size:14px; font-weight:650; color:var(--muted); min-height:44px; }
+    .choice[aria-pressed="true"] { background:var(--white); box-shadow:0 1px 6px #40374212; color:var(--shore); }
+    .choice:focus-visible { outline-offset:1px; }
+    .range-desc { margin-top:8px; font-size:12px; color:var(--muted); }
+    .primary { background:var(--shore); color:white; border:1px solid var(--shore); font-weight:720; }
+    .secondary { background:transparent; color:var(--shore); border:1px solid #c5baca; font-weight:700; }
+    .button { display:inline-flex; align-items:center; justify-content:center; gap:10px; min-height:52px; width:100%; border-radius:13px; padding:13px 18px; text-align:center; font-size:15px; }
+    .button:active { transform:translateY(1px); }
+    .actions { display:flex; gap:9px; margin-top:18px; }
+    .actions .button { flex:1; width:0; }
+    .actions .primary { flex:1.35; }
+    .practice-actions { margin-top:21px; flex-wrap:wrap; }
+    .practice-actions .button { min-width:0; }
+    .practice-actions .secondary { flex:.9; }
+    .link-button { background:transparent; border:0; color:var(--depth); font-size:13px; padding:12px; }
+    .small { color:var(--muted); font-size:12px; line-height:1.5; }
+    .fine { font-size:11px; color:var(--muted); }
+    .previous { border-left:3px solid var(--blue); margin-top:17px; padding:9px 12px; color:var(--muted); font-size:12px; }
+    .session-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:9px; }
+    .progress { display:flex; gap:6px; margin:17px 0 20px; }
+    .progress span { flex:1; height:5px; border-radius:4px; background:#e7dfe8; }
+    .progress .now { background:var(--blue); }.progress .done { background:var(--depth); }
+    .center { text-align:center; }
+    .stage { color:var(--depth); text-transform:uppercase; letter-spacing:.14em; font-size:11px; font-weight:760; min-height:22px; }
+    .note { font-size:70px; font-weight:760; letter-spacing:-.06em; line-height:1.1; margin:13px 0 1px; }
+    .frequency { font-size:13px; color:var(--muted); }
+    .disc { display:grid; place-items:center; width:138px; height:138px; margin:25px auto 17px; border:1px solid #e3d8e6; background:radial-gradient(circle at 30% 22%,#fff,#e6dce9 80%); color:var(--shore); font-size:33px; border-radius:50%; position:relative; transition:background .15s ease; }
+    .disc::after { content:""; position:absolute; inset:14px; border:1px solid #b3a7b8; border-radius:50%; opacity:.55; }
+    .disc.recording { background:radial-gradient(circle at 30% 22%,#fff,#cde4ee 75%); }
+    .disc.recording::after { border-color:var(--depth); }
+    .disc.countdown { background:radial-gradient(circle at 30% 22%,#fff,#ece8f2 80%); }
+    .stage-copy { min-height:48px; font-size:15px; color:var(--muted); }
+    .stage-copy strong { color:var(--shore); }
+    .meter { height:5px; border-radius:3px; background:#eae3eb; overflow:hidden; margin:16px 0 7px; }
+    .meter-fill { height:100%; background:var(--depth); width:0%; transition:width .1s linear; }
+    .result-card { animation:reveal .16s ease-out; }
+    @keyframes reveal { from { opacity:.4; transform:translateY(5px); } to { opacity:1;transform:none; } }
+    .result-heading { font-size:25px; font-weight:730; letter-spacing:-.035em; margin:6px 0 2px; }
+    .metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:19px 0 14px; }
+    .metric { border:1px solid var(--line); border-radius:12px; text-align:center; padding:11px 4px; background:var(--paper); min-width:0; }
+    .metric strong { display:block; font-size:clamp(16px,4vw,23px); font-weight:750; letter-spacing:-.025em; }
+    .metric span { display:block; font-size:10px; color:var(--muted); }
+    .chartbox { border:1px solid var(--line); border-radius:12px; background:var(--paper); padding:8px 8px 4px; }
+    .chartbox canvas { width:100%; height:142px; display:block; }
+    .chart-legend { display:flex; justify-content:space-between; margin-top:3px; color:var(--muted); font-size:10px; }
+    .tip { color:var(--muted); font-size:12px; margin-top:13px; }
+    .summary-list { margin-top:21px; }
+    .summary-row { display:grid; grid-template-columns:64px 1fr 55px; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--line); font-size:13px; }
+    .mini-track { position:relative; background:#e9e2eb; height:6px; border-radius:3px; }
+    .mini-track span { display:block; height:100%; background:var(--blue); border-radius:3px; }
+    .summary-row b { font-size:13px; text-align:right; }
+    .inline-note { display:flex; align-items:center; gap:7px; color:var(--muted); font-size:12px; }
+    .alert { background:#fff6ee; border:1px solid #eedbcb; color:#74513b; font-size:13px; padding:12px; border-radius:12px; margin-top:13px; }
+    .privacy { display:flex; gap:12px; align-items:flex-start; margin-top:30px; padding:19px 0; border-top:1px solid var(--line); color:var(--muted); font-size:12px; }
+    .privacy strong { color:var(--ink); font-weight:700; }
+    .footer { font-size:11px; color:var(--muted); padding-bottom:13px; }
+    .hidden { display:none !important; }
+    .visually-hidden { position:absolute !important; width:1px;height:1px;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap; }
+    @media(max-width:420px){ .shell{padding-left:16px;padding-right:16px}.card{padding:18px}.hero{grid-template-columns:1fr 80px}.woven{width:78px;height:78px}.site-header{margin-bottom:29px}.note{font-size:61px}.top-tag{display:none}.metrics{gap:5px}.metric{padding-left:3px;padding-right:3px}.metric span{font-size:9.5px} }
+    @media(prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+  </style>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="site-header">
+      <div class="identity">
+        <img src="assets/surfwave-mark.svg" alt="" aria-hidden="true">
+        <div><div class="wordmark">pitchback</div><div class="edition">VOICE / PRACTICE TOOL</div></div>
+      </div>
+      <div class="top-tag">HEAR IT. SING IT. SEE IT.</div>
+    </header>
+
+    <section id="welcome">
+      <div class="hero">
+        <div><div class="eyebrow">Pitch recall / 01</div><h1>Sing it back.</h1></div>
+        <div class="woven" aria-hidden="true"></div>
+      </div>
+      <p class="intro">Tap to play a note. Listen as often as you like. When you’re ready, tap Record mine and sing it back. Nothing starts automatically.</p>
+      <div class="card">
+        <h2>Your five-note check</h2>
+        <p class="help">Five pitches, at your own pace. No countdowns, scales, or music theory.</p>
+        <div class="choice-label">Comfortable area</div>
+        <div class="segmented" role="group" aria-label="Choose your comfortable vocal range">
+          <button type="button" class="choice" data-range="low" aria-pressed="false">Lower</button>
+          <button type="button" class="choice" data-range="mid" aria-pressed="true">Middle</button>
+          <button type="button" class="choice" data-range="high" aria-pressed="false">Upper</button>
+        </div>
+        <div id="range-desc" class="range-desc">G3–D4 · clearer on phone speakers and a comfortable starting point.</div>
+        <div class="choice-label"><label for="tone-volume">Reference volume</label> <span id="volume-label">100%</span></div>
+        <input id="tone-volume" type="range" min="20" max="100" value="100" step="10" aria-label="Reference tone volume">
+        <p class="range-desc">The reference is longer and uses warmer harmonics so it’s clearer on phone speakers. Turn it down with headphones if needed.</p>
+      </div>
+      <button type="button" class="button primary" id="start">Start my baseline <span aria-hidden="true">↗</span></button>
+      <p class="small" style="text-align:center;margin-top:11px">You control when the note plays and when recording starts</p>
+      <div class="previous hidden" id="previous"></div>
+    </section>
+
+    <section id="session" class="hidden" aria-live="polite">
+      <div class="session-heading"><span class="eyebrow" id="counter">NOTE 1 OF 5</span><button class="link-button" type="button" id="quit">End session</button></div>
+      <div class="progress" id="progress" aria-label="Progress through five notes"></div>
+      <div class="card center">
+        <div class="stage" id="stage">GET READY</div>
+        <div class="note" id="target">A3</div>
+        <div class="frequency" id="freq">220 Hz</div>
+        <div class="disc" id="disc" aria-hidden="true">♪</div>
+        <div class="stage-copy" id="stage-copy">Tap Play tone. Sing when you’re ready.</div>
+        <div class="meter" aria-hidden="true"><div class="meter-fill" id="meter"></div></div>
+        <div class="fine" id="live-msg">No live pitch indicator while you sing.</div>
+        <div class="actions practice-actions" id="practice-actions">
+          <button type="button" class="button primary" id="play-tone">▶ Play tone</button>
+          <button type="button" class="button primary hidden" id="record-mine">● Record mine</button>
+          <button type="button" class="button primary hidden" id="stop-take">■ Stop &amp; see result</button>
+          <button type="button" class="button secondary hidden" id="replay-tone">↻ Replay tone</button>
+        </div>
+      </div>
+      <div id="result" class="card result-card hidden" aria-live="polite">
+        <div class="eyebrow">YOUR TAKE</div>
+        <div class="result-heading" id="result-title">Nice.</div>
+        <p class="help" id="result-description"></p>
+        <div class="metrics" id="metrics">
+          <div class="metric"><strong id="m-first">—</strong><span>First landing</span></div>
+          <div class="metric"><strong id="m-center">—</strong><span>Settled pitch</span></div>
+          <div class="metric"><strong id="m-spread">—</strong><span>Variation</span></div>
+        </div>
+        <div class="chartbox" id="chartbox">
+          <canvas id="chart" width="640" height="290" role="img" aria-label="Estimated pitch relative to the target. The central vertical line is the target pitch."></canvas>
+          <div class="chart-legend"><span>Flat ←</span><span>Target = 0¢</span><span>→ Sharp</span></div>
+        </div>
+        <p class="tip" id="result-tip"></p>
+        <div class="actions"><button type="button" class="button secondary" id="retry">Try again</button><button type="button" class="button primary" id="next">Next note <span aria-hidden="true">→</span></button></div>
+      </div>
+    </section>
+
+    <section id="complete" class="hidden">
+      <div class="eyebrow">Baseline / complete</div>
+      <h1>Your pitch<br>snapshot.</h1>
+      <p class="intro">A starting point, not a grade. You controlled the timing for every note. Repeat them to build recall, or come back another day.</p>
+      <div class="card">
+        <div class="eyebrow">Median settled error</div>
+        <div class="note" style="font-size:53px" id="overall">—</div>
+        <p class="help" id="overall-comment"></p>
+        <div class="summary-list" id="summary-list"></div>
+      </div>
+      <button type="button" class="button primary" id="repeat">Practice these five again <span aria-hidden="true">↗</span></button>
+      <div class="actions" style="margin-top:9px"><button type="button" class="button secondary" id="again">Five new notes</button><button type="button" class="button secondary" id="change-range">Change settings</button></div>
+      <button type="button" class="link-button" id="clear-history" style="margin:14px auto 0;display:block">Clear saved pitch history</button>
+      <p class="fine" style="text-align:center">Only numbers are saved on this browser, never microphone audio.</p>
+    </section>
+
+    <div class="privacy"><span aria-hidden="true">◌</span><p><strong>Private by design.</strong> The mic is analyzed on this device. No uploads, accounts, analytics, or audio recordings. Only numeric summaries are saved locally, and you can clear them.</p></div>
+    <footer class="footer">Pitchback v1.1 · Experimental estimates, not a clinical or vocal assessment. No guitar while measuring. If anything hurts or feels strained, stop.</footer>
+  </main>
+</body>
+</html>
