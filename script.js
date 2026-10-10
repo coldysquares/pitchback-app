@@ -140,7 +140,8 @@ function stopTone(){
   for(const gain of toneGain){try { gain.disconnect(); } catch {}}
   toneOsc=[];toneGain=[];playing=false;
 }
-function cancelActive({closeMic=true}={}){\n  stopReferenceAudio();
+function cancelActive({closeMic=true}={}){
+  stopReferenceAudio();
   flowToken++;
   collecting=false;
   if(animation)cancelAnimationFrame(animation);
