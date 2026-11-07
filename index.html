@@ -109,6 +109,7 @@
     @media(prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
   </style>
   <script src="script.js" defer></script>
+  <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
 </head>
 <body>
   <main class="shell">
